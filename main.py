@@ -1,0 +1,43 @@
+from mesa.visualization.modules import CanvasGrid
+from mesa.visualization.ModularVisualization import ModularServer
+from mesa.visualization.modules import ChartModule
+
+# Import the implemented classes
+from model import ForestFire
+
+import os
+import sys
+
+# Change stdout so we can ignore most prints etc.
+orig_stdout = sys.stdout
+sys.stdout = open(os.devnull, 'w')
+sys.stdout = orig_stdout
+
+# You can change this to whatever ou want. Make sure to make the different types
+# of agents distinguishable
+def agent_portrayal(agent):
+    if agent is None:
+      return
+    return agent.get_portrayal()
+
+# Create a grid of 20 by 20 cells, and display it as 500 by 500 pixels
+grid = CanvasGrid(agent_portrayal, 40, 40, 500, 500)
+
+# Create a dynamic linegraph
+chart1 = ChartModule([{"Label": "Density",
+                      "Color": "green"}],
+                    data_collector_name='datacollector')
+chart2 = ChartModule([{"Label": "On Fire",
+                      "Color": "red"}],
+                    data_collector_name='datacollector')
+
+# Create the server, and pass the grid and the graph
+server = ModularServer(ForestFire,
+                       [grid, chart1, chart2],
+                       "ForestFire Model",
+                       {})
+
+server.port = 8521
+
+server.launch()
+
