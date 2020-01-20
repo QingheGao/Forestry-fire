@@ -30,10 +30,15 @@ chart1 = ChartModule([{"Label": "Density",
 chart2 = ChartModule([{"Label": "On Fire",
                       "Color": "red"}],
                     data_collector_name='datacollector')
+chart3 = ChartModule([{"Label": "Burn factor",
+                      "Color": "red"},
+                      {"Label": "Growth factor",
+                       "Color": "green"}],
+                    data_collector_name='datacollector')
 
 # Create the server, and pass the grid and the graph
 server = ModularServer(ForestFire,
-                       [grid, chart1, chart2],
+                       [grid, chart1, chart2, chart3],
                        "ForestFire Model",
                        {})
 
