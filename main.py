@@ -24,6 +24,15 @@ def agent_portrayal(agent):
 grid = CanvasGrid(agent_portrayal, 40, 40, 500, 500)
 
 # Create a dynamic linegraph
+chart0 = ChartModule([{"Label": "Total cost",
+                      "Color": "yellow"},
+                      {"Label": "Extinguish cost",
+                       "Color": "blue"},
+                      {"Label": "Burn cost",
+                       "Color": "orange"},
+                      {"Label": "Cut down cost",
+                       "Color": "green"}],
+                    data_collector_name='datacollector')
 chart1 = ChartModule([{"Label": "Density",
                       "Color": "green"}],
                     data_collector_name='datacollector')
@@ -38,7 +47,7 @@ chart3 = ChartModule([{"Label": "Burn factor",
 
 # Create the server, and pass the grid and the graph
 server = ModularServer(ForestFire,
-                       [grid, chart1, chart2, chart3],
+                       [grid, chart0, chart1, chart2, chart3],
                        "ForestFire Model",
                        {})
 

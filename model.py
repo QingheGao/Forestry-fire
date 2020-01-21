@@ -19,6 +19,10 @@ class ForestFire(Model):
         self.density_lower = density_lower
         self.density_upper = density_upper
         self.number_firefighters = number_firefighters
+
+        self.extinguish_cost = 0
+        self.burn_cost = 0
+        self.cut_down_cost = 0
         
         self.grid = MultiGrid(self.width, self.height, torus=False)
 
@@ -29,7 +33,12 @@ class ForestFire(Model):
         self.datacollector = DataCollector({"Density": lambda m: self.get_avg_density(),
                                             "On Fire": lambda m: self.get_fraction_on_fire(),
                                             "Burn factor": lambda m: self.burn_factor(),
-                                            "Growth factor": lambda m: self.growth_factor()})
+                                            "Growth factor": lambda m: self.growth_factor(),
+                                            "Total cost": lambda m: self.extinguish_cost + self.burn_cost + self.cut_down_cost,
+                                            "Extinguish cost": lambda m: self.extinguish_cost,
+                                            "Burn cost": lambda m: self.burn_cost,
+                                            "Cut down cost": lambda m: self.cut_down_cost
+                                            })
 
         # Create trees and firefighters
         self.init_terrain()
@@ -47,7 +56,7 @@ class ForestFire(Model):
         return (sin((self.step_counter / 365) * 2 * pi) + 1) / 2
 
     def growth_factor(self):
-        return (cos((self.step_counter / 365) * 2 * pi) + 1) / 2
+        return (sin((self.step_counter / 365) * 2 * pi) + 1) / 2
 
     def init_terrain(self):
         # fill with dirt

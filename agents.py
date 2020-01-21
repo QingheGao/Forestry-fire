@@ -27,7 +27,7 @@ class Tree(Agent):
             self.density -= self.density * 0.40
 
             for neighbor in self.model.grid.neighbor_iter(self.pos, moore=True):
-                if type(neighbor) is Tree and not neighbor.on_fire:
+                if type(neighbor) is Tree and not neighbor.on_fire and neighbor.density > 0.1:
                     if random.random() < neighbor.density * 0.4:
                         neighbor.on_fire = True
             
@@ -58,20 +58,11 @@ class FireFighter(Agent):
         super().__init__(unique_id, model)
         self.pos = pos
 
-        self.strategy = self.extinguish_only
+        self.strategy = self.intelligent
 
     def step(self):
-
         # execute strategy
         self.strategy()
-
-        # for neighbor in self.model.grid.neighbor_iter(self.pos):
-        #     if type(neighbor) is Tree and neighbor.on_fire:
-        #         neighbor.on_fire = False
-        #     else:
-        #         neighborhoods = self.model.grid.get_neighborhood(self.pos, moore=True)
-        #         newpos = random.choice(neighborhoods)
-        #         self.model.grid.move_agent(self, newpos)
 
     def burn_down_only(self):
         # teleport to tree with highest density
@@ -87,7 +78,7 @@ class FireFighter(Agent):
 
         for agent in self.model.grid.get_neighbors(self.pos, moore=True, radius=0, include_center=True):
             if type(agent) is Tree and agent.density > 0.25:
-                agent.on_fire = True
+                self.burn_tree(agent)
 
     def cut_down_only(self):
         # teleport to tree with highest density
@@ -103,14 +94,12 @@ class FireFighter(Agent):
 
         for agent in self.model.grid.get_neighbors(self.pos, moore=True, radius=0, include_center=True):
             if type(agent) is Tree and agent.density > 0.25:
-                agent.density -= 0.2
+                self.cut_down_tree(agent, 0.2)
 
     def extinguish_only(self):
-        for agent in self.model.grid.get_neighbors(self.pos, moore=True, radius=1, include_center=True):
-            if type(agent) is Tree and agent.on_fire:
-                agent.on_fire = False
+        self.extinguish_trees(self.pos, radius=1)
 
-        # teleport to tree with highest density
+        # teleport to tree that is on fire
         new_location = self.pos
         coords = [coord for coord in self.model.grid.coord_iter()]
         random.shuffle(coords)
@@ -120,6 +109,58 @@ class FireFighter(Agent):
                     if type(agent) is Tree and agent.on_fire:
                         new_location = (x, y)
         self.model.grid.move_agent(self, new_location)
+
+    def burn_plus_cut(self):
+        # teleport to tree with highest density
+        max_density = 0
+        new_location = self.pos
+        for (agents, x, y) in self.model.grid.coord_iter():
+            if FireFighter not in [type(agent) for agent in agents]:
+                for agent in agents:
+                    if type(agent) is Tree and agent.density > max_density:
+                        max_density = agent.density
+                        new_location = (x, y)
+        self.model.grid.move_agent(self, new_location)
+
+        total_density = 0
+        total_trees = 0
+        for agent in self.model.grid.get_neighbors(self.pos, moore=True, radius=3, include_center=True):
+            if type(agent) is Tree:
+                total_trees += 1
+                total_density += agent.density
+
+        avg_density = total_density / total_trees
+        if avg_density > 0.3:
+            # burn middle tree
+            for agent in self.model.grid.get_neighbors(self.pos, moore=True, radius=0, include_center=True):
+                if type(agent) is Tree:
+                    self.burn_tree(agent)
+        elif avg_density > 0.15:
+            # cut down middle tree
+            for agent in self.model.grid.get_neighbors(self.pos, moore=True, radius=0, include_center=True):
+                if type(agent) is Tree:
+                    self.cut_down_tree(agent, 0.2)
+
+    def intelligent(self):
+        if self.model.get_fraction_on_fire() > 0.02:
+            self.extinguish_only()
+        else:
+            self.burn_plus_cut()
+
+    def cut_down_tree(self, tree, amount):
+        tree.density -= min(amount, tree.density)
+        self.model.cut_down_cost += 200
+
+    def burn_tree(self, tree):
+        tree.on_fire = True
+        self.model.burn_cost += 50
+
+    def extinguish_trees(self, pos, radius=1):
+        self.model.extinguish_cost += 100
+        for agent in self.model.grid.get_neighbors(pos, moore=True, radius=radius, include_center=True):
+            if type(agent) is Tree and agent.on_fire:
+                agent.on_fire = False
+                self.model.extinguish_cost += 10
 
     def get_portrayal(self):
         portrayal = {"Shape": "circle",
