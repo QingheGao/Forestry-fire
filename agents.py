@@ -27,7 +27,7 @@ class Tree(Agent):
             self.density -= self.density * 0.40
 
             for neighbor in self.model.grid.neighbor_iter(self.pos, moore=True):
-                if type(neighbor) is Tree and not neighbor.on_fire:
+                if type(neighbor) is Tree and not neighbor.on_fire and neighbor.density > 0.1:
                     if random.random() < neighbor.density * 0.4:
                         neighbor.on_fire = True
             
@@ -36,7 +36,7 @@ class Tree(Agent):
                 self.on_fire = False
         else:
             # grow a little bit each step if not on fire
-            self.density += self.density * (1 - self.density) * 0.02 * self.model.growth_factor()
+            self.density += self.density * (1 - self.density) * 0.02 * self.model.burn_factor()
 
 
     def get_color(self):
