@@ -36,7 +36,7 @@ class Tree(Agent):
                 self.on_fire = False
         else:
             # grow a little bit each step if not on fire
-            self.density += self.density * (1 - self.density) * 0.02 * self.model.growth_factor()
+            self.density += self.density * (1 - self.density) * 0.02 * self.model.burn_factor()
 
 
     def get_color(self):
