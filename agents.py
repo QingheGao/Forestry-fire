@@ -1,7 +1,7 @@
 from mesa import Agent
 from utils import rgb_to_hex
 import random
-from math import sin, cos, pi
+from math import sin, cos, pi, e
 
 
 class Tree(Agent):
@@ -19,29 +19,27 @@ class Tree(Agent):
         """ 
 
         # check if tree should burn
-        if random.random() < (self.density ** 2) * 0.001 * self.model.burn_factor():
+        if random.random() < self.model.fire_spawn_param:
             self.on_fire = True
 
         if self.on_fire:
-            # reduce own density
-            self.density -= self.density * 0.40
-
             for neighbor in self.model.grid.neighbor_iter(self.pos, moore=True):
-                if type(neighbor) is Tree and not neighbor.on_fire and neighbor.density > 0.1:
-                    if random.random() < neighbor.density * 0.4:
+                if type(neighbor) is Tree and not neighbor.on_fire:
+                    if random.random() < neighbor.density * self.model.fire_spread_param:
                         neighbor.on_fire = True
             
-            # check if burn out
-            if self.density < 0.1:
-                self.on_fire = False
-        else:
-            # grow a little bit each step if not on fire
-            self.density += self.density * (1 - self.density) * 0.02 * self.model.growth_factor()
+            # burn down
+            self.density = 0
+            self.on_fire = False
+
+        # else:
+        #     # grow a little bit each step if not on fire
+        #     # self.density += self.density * (1 - self.density) * 0.02 * self.model.growth_factor()
 
 
     def get_color(self):
         if not self.on_fire:
-            return rgb_to_hex((0, min(int(255 * self.density * 3), 255), 0))
+            return rgb_to_hex((0, min(int(255 * (self.density / 100)), 255), 0))
         else:
            return "red"
 
@@ -50,7 +48,7 @@ class Tree(Agent):
                  "Color": self.get_color(),
                  "Filled": "true",
                  "Layer": 1,
-                 "r": 0.5}
+                 "r": 1}
         return portrayal
 
 class FireFighter(Agent):
