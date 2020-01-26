@@ -21,7 +21,7 @@ def agent_portrayal(agent):
     return agent.get_portrayal()
 
 # Create a grid of 20 by 20 cells, and display it as 500 by 500 pixels
-grid = CanvasGrid(agent_portrayal, 20, 20, 1000, 1000)
+grid = CanvasGrid(agent_portrayal, 20, 20, 600, 600)
 
 # Create a dynamic linegraph
 chart0 = ChartModule([{"Label": "Total cost",

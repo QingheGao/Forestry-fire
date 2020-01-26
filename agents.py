@@ -12,16 +12,11 @@ class Tree(Agent):
         self.pos = pos
 
         self.density = density
-        self.age = 0
 
     def step(self):
         """
         If the tree is on fire, spread it to fine trees nearby.
         """ 
-
-        # check if tree should burn
-        if random.random() < self.model.fire_spawn_param:
-            self.on_fire = True
 
         if self.on_fire:
             for neighbor in self.model.grid.neighbor_iter(self.pos, moore=True):
@@ -32,14 +27,6 @@ class Tree(Agent):
             # burn down
             self.density = 0
             self.on_fire = False
-
-        else:
-            # grow a little bit each step if not on fire
-            # self.density += (self.density / self.model.max_density * (1 - self.density / self.model.max_density)) * self.model.max_density * (1/365)
-            self.density += (self.model.max_density - self.density) * 0.02 / 365
-
-
-        self.age += 1
 
 
     def get_color(self):
