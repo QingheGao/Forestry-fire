@@ -12,6 +12,7 @@ class Tree(Agent):
         self.pos = pos
 
         self.density = density
+        self.age = 0
 
     def step(self):
         """
@@ -32,9 +33,13 @@ class Tree(Agent):
             self.density = 0
             self.on_fire = False
 
-        # else:
-        #     # grow a little bit each step if not on fire
-        #     # self.density += self.density * (1 - self.density) * 0.02 * self.model.growth_factor()
+        else:
+            # grow a little bit each step if not on fire
+            # self.density += (self.density / self.model.max_density * (1 - self.density / self.model.max_density)) * self.model.max_density * (1/365)
+            self.density += (self.model.max_density - self.density) * 0.02 / 365
+
+
+        self.age += 1
 
 
     def get_color(self):

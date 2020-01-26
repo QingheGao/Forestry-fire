@@ -10,8 +10,8 @@ from terrain import Dirt
 
 
 class ForestFire(Model):
-    def __init__(self, height=10, width=10,
-        initial_density_dist_alpha=1.5, initial_density_dist_beta=10, initial_density_max=555,
+    def __init__(self, height=20, width=20,
+        initial_density_dist_alpha=1.5, initial_density_dist_beta=10, max_density=555,
         fire_spawn_param=0.00001, fire_spread_param=0.004,
         number_firefighters=0):
 
@@ -21,7 +21,7 @@ class ForestFire(Model):
         self.width = width
         self.initial_density_dist_alpha = initial_density_dist_alpha
         self.initial_density_dist_beta = initial_density_dist_beta
-        self.initial_density_max = initial_density_max
+        self.max_density = max_density
         
         self.fire_spawn_param = fire_spawn_param
         self.fire_spread_param = fire_spread_param
@@ -74,7 +74,7 @@ class ForestFire(Model):
     def init_trees(self):
         for (agents, x, y) in self.grid.coord_iter():
             if Dirt in (type(agent) for agent in agents):
-                self.new_tree((x, y), random.betavariate(self.initial_density_dist_alpha, self.initial_density_dist_beta) * self.initial_density_max)
+                self.new_tree((x, y), random.betavariate(self.initial_density_dist_alpha, self.initial_density_dist_beta) * self.max_density)
                 self.total_trees += 1
 
     def init_firefighters(self):
