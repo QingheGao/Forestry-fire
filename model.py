@@ -10,12 +10,19 @@ from terrain import Dirt
 
 
 class ForestFire(Model):
-    def __init__(self, height=20, width=20,
+    
+    width = 50
+    height = 50
+    
+    def __init__(self, height=height, width=width,
         initial_density_dist_alpha=1.5, initial_density_dist_beta=10, max_density=555,
         fire_spread_param=0.004,
         number_firefighters=0):
 
         super().__init__()
+
+        # don't use for simulation
+        random.seed(1)
 
         self.height = height
         self.width = width
@@ -39,8 +46,6 @@ class ForestFire(Model):
 
         self.datacollector = DataCollector({"Density": lambda m: self.get_avg_density(),
                                             "On Fire": lambda m: self.get_fraction_on_fire(),
-                                            "Burn factor": lambda m: self.burn_factor(),
-                                            "Growth factor": lambda m: self.growth_factor(),
                                             "Total cost": lambda m: self.extinguish_cost + self.burn_cost + self.cut_down_cost,
                                             "Extinguish cost": lambda m: self.extinguish_cost,
                                             "Burn cost": lambda m: self.burn_cost,
@@ -58,12 +63,6 @@ class ForestFire(Model):
         # This is required for the datacollector to work
         self.running = True
         self.datacollector.collect(self)
-
-    def burn_factor(self):
-        return (sin((self.step_counter / 365) * 2 * pi) + 1) / 2
-
-    def growth_factor(self):
-        return (sin((self.step_counter / 365) * 2 * pi) + 1) / 2
 
     def init_terrain(self):
         # fill with dirt
