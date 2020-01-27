@@ -22,7 +22,7 @@ class ForestFire(Model):
         super().__init__()
 
         # don't use for simulation
-        random.seed(0)
+        # random.seed(0)
 
         self.height = height
         self.width = width
@@ -50,7 +50,9 @@ class ForestFire(Model):
         self.schedule_Tree = RandomActivation(self)
         self.schedule_FireFighter = RandomActivation(self)
 
-        self.datacollector = DataCollector({"Density": lambda m: self.get_avg_density(),
+        self.datacollector = DataCollector({"Average Density": lambda m: self.get_total_density() / self.total_trees,
+                                            "Total Density": lambda m: self.get_total_density(),
+                                            "Percentage lost": lambda m: self.percentage_lost(),
                                             "On Fire": lambda m: self.get_fraction_on_fire(),
                                             "Total cost": lambda m: self.extinguish_cost + self.burn_cost + self.cut_down_cost,
                                             "Extinguish cost": lambda m: self.extinguish_cost,
@@ -86,6 +88,8 @@ class ForestFire(Model):
         for agent in self.grid[fire_x][fire_y]:
             if type(agent) is Tree:
                 agent.on_fire = True
+
+        self.initial_total_density = self.get_total_density()
 
     def init_firefighters(self):
         for _ in range(self.number_firefighters):
@@ -147,13 +151,13 @@ class ForestFire(Model):
             self.calculate_fire_edges()
         return self.fire_edges
 
-    def get_avg_density(self):
+    def get_total_density(self):
         total_density = 0
         for (agents, _, _) in self.grid.coord_iter():
             for agent in agents:
                 if type(agent) is Tree:
                     total_density += agent.density
-        return total_density / self.total_trees
+        return total_density
 
     def get_fraction_on_fire(self):
         total_burning = 0
@@ -162,3 +166,6 @@ class ForestFire(Model):
                 if type(agent) is Tree and agent.on_fire:
                     total_burning += 1
         return total_burning / self.total_trees
+
+    def percentage_lost(self):
+        return (1 - self.get_total_density() / self.initial_total_density) * 100
