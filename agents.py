@@ -48,7 +48,7 @@ class FireFighter(Agent):
         super().__init__(unique_id, model)
         self.pos = pos
 
-        self.strategy = self.extinguish_only
+        self.strategy = self.firelines_only
 
     def step(self):
         # execute strategy
@@ -115,7 +115,7 @@ class FireFighter(Agent):
         
     
     def firelines_only(self):
-        if self.model.get_fraction_on_fire() < 0.0:
+        if self.model.get_fraction_on_fire() == 0.0:
             return
 
         max_density = 0
@@ -137,7 +137,7 @@ class FireFighter(Agent):
             self.model.calculate_fire_edges()
 
     def extinguish_only(self):
-        if self.model.get_fraction_on_fire() < 0.0:
+        if self.model.get_fraction_on_fire() == 0.0:
             return
 
         # teleport to tree that is on fire
