@@ -7,6 +7,7 @@ from math import pi, sin, cos
 
 from agents import Tree, FireFighter
 from terrain import Dirt
+from schedule import RandomActivationForestFire
 
 
 class ForestFire(Model):
@@ -46,9 +47,7 @@ class ForestFire(Model):
         
         self.grid = MultiGrid(self.width, self.height, torus=False)
 
-        # Add a schedule for trees and firefighters seperately to prevent race-conditions
-        self.schedule_Tree = RandomActivation(self)
-        self.schedule_FireFighter = RandomActivation(self)
+        self.schedule = RandomActivationForestFire(self)
 
         self.datacollector = DataCollector({"Average Density": lambda m: self.get_total_density() / self.total_trees,
                                             "Total Density": lambda m: self.get_total_density(),
@@ -66,7 +65,7 @@ class ForestFire(Model):
         self.init_trees()
         self.init_firefighters()
 
-        self.step_counter = 0
+        self.steps = 0
 
         # This is required for the datacollector to work
         self.running = True
@@ -101,30 +100,30 @@ class ForestFire(Model):
         '''
         Method that creates a new agent, and adds it to the correct scheduler.
         '''
-        agent = Tree(self.next_id(), self, pos, density)
+        tree = Tree(self.next_id(), self, pos, density)
 
-        self.grid.place_agent(agent, pos)
-        self.schedule_Tree.add(agent)
+        self.grid.place_agent(tree, pos)
+        self.schedule.add_tree(tree)
 
     def new_firefighter(self, pos):
-        agent = FireFighter(self.next_id(), self, pos)
+        firefighter = FireFighter(self.next_id(), self, pos)
 
-        self.grid.place_agent(agent, pos)
-        self.schedule_FireFighter.add(agent)
+        self.grid.place_agent(firefighter, pos)
+        self.schedule.add_firefighter(firefighter)
 
     def step(self):
         '''
         Method that calls the step method for each of the sheep, and then for each of the wolves.
         '''
-        self.schedule_Tree.step()
-
-        if self.step_counter > self.firefighter_response_delay:
-            self.schedule_FireFighter.step()
+        if self.steps > self.firefighter_response_delay:
+            self.schedule.step()
+        else:
+            self.schedule.step(activate_firefighters=False)
 
         # Save the statistics
         self.datacollector.collect(self)
 
-        self.step_counter += 1
+        self.steps += 1
 
     def calculate_fire_edges(self):
         max_x = 0
