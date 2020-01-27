@@ -16,13 +16,13 @@ class ForestFire(Model):
     
     def __init__(self, height=height, width=width,
         initial_density_dist_alpha=1.5, initial_density_dist_beta=10, max_density=555,
-        fire_spread_param=0.004,
-        number_firefighters=0):
+        fire_spread_param=0.0045,
+        number_firefighters=10, extinguish_difficulty=5, fire_line_margin=5, cut_down_amount=555):
 
         super().__init__()
 
         # don't use for simulation
-        random.seed(1)
+        random.seed(0)
 
         self.height = height
         self.width = width
@@ -33,6 +33,11 @@ class ForestFire(Model):
         self.fire_spread_param = fire_spread_param
         
         self.number_firefighters = number_firefighters
+        self.extinguish_difficulty = extinguish_difficulty
+        self.fire_line_margin = fire_line_margin
+        self.cut_down_amount = cut_down_amount
+
+        self.fire_edges = None
 
         self.extinguish_cost = 0
         self.burn_cost = 0
@@ -107,12 +112,39 @@ class ForestFire(Model):
         Method that calls the step method for each of the sheep, and then for each of the wolves.
         '''
         self.schedule_Tree.step()
-        self.schedule_FireFighter.step()
+
+        if self.step_counter > 2:
+            self.schedule_FireFighter.step()
 
         # Save the statistics
         self.datacollector.collect(self)
 
         self.step_counter += 1
+
+    def calculate_fire_edges(self):
+        max_x = 0
+        min_x = self.width
+        max_y = 0
+        min_y = self.height
+
+        for (agents, x, y) in self.grid.coord_iter():
+            for agent in agents:
+                if type(agent) is Tree and agent.on_fire:
+                    if x > max_x:
+                        max_x = x
+                    if x < min_x:
+                        min_x = x
+                    if y > max_y:
+                        max_y = y
+                    if y < min_y:
+                        min_y = y
+        
+        self.fire_edges = (min_x, max_x, min_y, max_y)
+    
+    def get_fire_edges(self):
+        if self.fire_edges is None:
+            self.calculate_fire_edges()
+        return self.fire_edges
 
     def get_avg_density(self):
         total_density = 0

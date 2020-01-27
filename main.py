@@ -42,7 +42,7 @@ chart2 = ChartModule([{"Label": "On Fire",
 
 # Create the server, and pass the grid and the graph
 server = ModularServer(ForestFire,
-                       [grid, chart1, chart2],
+                       [grid, chart0, chart1, chart2],
                        "ForestFire Model",
                        {})
 
