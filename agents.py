@@ -203,7 +203,7 @@ class FireFighter(Agent):
     def extinguish_trees(self, pos, radius=1):
         for agent in self.model.grid.get_neighbors(pos, moore=True, radius=radius, include_center=True):
             if type(agent) is Tree and agent.on_fire:
-                if random.random() > (agent.density / self.model.max_density) * self.model.extinguish_difficulty:
+                if random.random() * self.model.extinguish_max > agent.density:
                     agent.on_fire = False
                     self.model.extinguish_cost += 1
 
