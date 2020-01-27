@@ -48,7 +48,7 @@ class FireFighter(Agent):
         super().__init__(unique_id, model)
         self.pos = pos
 
-        self.strategy = self.firelines_only
+        self.strategy = self.extinguish_only
 
     def step(self):
         # execute strategy
@@ -203,7 +203,7 @@ class FireFighter(Agent):
     def extinguish_trees(self, pos, radius=1):
         for agent in self.model.grid.get_neighbors(pos, moore=True, radius=radius, include_center=True):
             if type(agent) is Tree and agent.on_fire:
-                if random.random() * self.model.extinguish_max > agent.density:
+                if random.betavariate(1, self.model.extinguish_difficulty) * self.model.max_density > agent.density:
                     agent.on_fire = False
                     self.model.extinguish_cost += 1
 

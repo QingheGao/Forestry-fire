@@ -17,7 +17,7 @@ class ForestFire(Model):
     def __init__(self, height=height, width=width,
         initial_density_dist_alpha=1.5, initial_density_dist_beta=10, max_density=555,
         fire_spread_param=0.0045,
-        number_firefighters=10, extinguish_max=100, fire_line_margin=5, cut_down_amount=250, firefighter_response_delay=1):
+        number_firefighters=10, extinguish_difficulty=3, fire_line_margin=5, cut_down_amount=250, firefighter_response_delay=1):
 
         super().__init__()
 
@@ -33,7 +33,7 @@ class ForestFire(Model):
         self.fire_spread_param = fire_spread_param
         
         self.number_firefighters = number_firefighters
-        self.extinguish_max = extinguish_max
+        self.extinguish_difficulty = extinguish_difficulty
         self.fire_line_margin = fire_line_margin
         self.cut_down_amount = cut_down_amount
         self.firefighter_response_delay = firefighter_response_delay
