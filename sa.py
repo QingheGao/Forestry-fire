@@ -4,9 +4,9 @@ from mesa.batchrunner import BatchRunner
 from model import ForestFire
 
 problem = {
-    'num_vars': 3,
-    'names': ['fire_spread_param', 'number_firefighters', 'extinguish_difficulty'],
-    'bounds': [[0.003, 0.006], [1, 20], [1, 5]]
+    'num_vars': 4,
+    'names': ['fire_spread_param', 'number_firefighters', 'extinguish_difficulty', 'firefighter_response_delay'], 
+    'bounds': [[0.003, 0.006], [1, 20], [1, 5], [1, 5]]
 }
 
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
@@ -33,6 +33,7 @@ for i in range(replicates):
         vals = list(vals)
         vals[1] = int(vals[1])
         vals[2] = int(vals[2])
+        vals[3] = int(vals[3])
 
         # Transform to dict with parameter names and their values
         variable_parameters = {}
