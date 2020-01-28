@@ -5,7 +5,7 @@ from itertools import combinations
 import numpy as np
 
 
-data = pickle.load(open("data.p", "rb"))
+data = pickle.load(open("data_fireline.p", "rb"))
 
 def plot_index(s, params, i, title=''):
     """
@@ -46,17 +46,17 @@ problem = {
     'bounds': [[0.003, 0.006], [1, 20], [1, 5], [100, 555],[1,5]]
 }
 
-Si_cutdown = sobol.analyze(problem, data['Percentage lost'].as_matrix(), print_to_console=True)
+Si_fireline = sobol.analyze(problem, data['Percentage lost'].as_matrix(), print_to_console=True)
 
 
 # First order
-plot_index(Si_cutdown, problem['names'], '1', 'First order sensitivity')
+plot_index(Si_fireline, problem['names'], '1', 'First order sensitivity')
 plt.show()
 
 # Second order
-plot_index(Si_cutdown, problem['names'], '2', 'Second order sensitivity')
+plot_index(Si_fireline, problem['names'], '2', 'Second order sensitivity')
 plt.show()
 
 # Total order
-plot_index(Si_cutdown, problem['names'], 'T', 'Total order sensitivity')
+plot_index(Si_fireline, problem['names'], 'T', 'Total order sensitivity')
 plt.show()
