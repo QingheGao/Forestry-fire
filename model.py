@@ -124,7 +124,7 @@ class ForestFire(Model):
         # Save the statistics
         self.datacollector.collect(self)
 
-        if self.get_number_on_fire > 0:
+        if self.get_number_on_fire() > 0:
             self.burnout_time += 1
 
     def calculate_fire_edges(self):
