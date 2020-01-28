@@ -2,6 +2,7 @@ from SALib.sample import saltelli
 from SALib.analyze import sobol
 from mesa.batchrunner import BatchRunner
 from model import ForestFire
+import pickle
 
 problem = {
     'num_vars': 4,
@@ -15,7 +16,8 @@ max_steps = 50
 distinct_samples = 10
 
 # Set the outputs
-model_reporters = {"Percentage lost": lambda m: m.percentage_lost()}
+model_reporters = {"Percentage lost": lambda m: m.percentage_lost(),
+                   "Burnout time": lambda m: m.burnout_time}
 
 # We get all our samples here
 param_values = saltelli.sample(problem, distinct_samples)
@@ -32,7 +34,6 @@ for i in range(replicates):
         # Change parameters that should be integers
         vals = list(vals)
         vals[1] = int(vals[1])
-        vals[2] = int(vals[2])
         vals[3] = int(vals[3])
 
         # Transform to dict with parameter names and their values
@@ -47,4 +48,5 @@ for i in range(replicates):
         print(f'{count / (len(param_values) * (replicates)) * 100:.2f}% done')
     
 data = batch.get_model_vars_dataframe()
+pickle.dump(data, open("data.p", "wb"))
 print(data)

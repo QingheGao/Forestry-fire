@@ -115,7 +115,7 @@ class FireFighter(Agent):
         
     
     def firelines_only(self):
-        if self.model.get_fraction_on_fire() == 0.0:
+        if self.model.get_number_on_fire() == 0:
             return
 
         max_density = 0
@@ -137,7 +137,7 @@ class FireFighter(Agent):
             self.model.calculate_fire_edges()
 
     def extinguish_only(self):
-        if self.model.get_fraction_on_fire() == 0.0:
+        if self.model.get_number_on_fire() == 0:
             return
 
         # teleport to tree that is on fire

@@ -44,6 +44,7 @@ class ForestFire(Model):
         self.extinguish_cost = 0
         self.burn_cost = 0
         self.cut_down_cost = 0
+        self.burnout_time = 0
         
         self.grid = MultiGrid(self.width, self.height, torus=False)
 
@@ -52,7 +53,7 @@ class ForestFire(Model):
         self.datacollector = DataCollector({"Average Density": lambda m: self.get_total_density() / self.total_trees,
                                             "Total Density": lambda m: self.get_total_density(),
                                             "Percentage lost": lambda m: self.percentage_lost(),
-                                            "On Fire": lambda m: self.get_fraction_on_fire(),
+                                            "On Fire": lambda m: self.get_number_on_fire() / self.total_trees,
                                             "Total cost": lambda m: self.extinguish_cost + self.burn_cost + self.cut_down_cost,
                                             "Extinguish cost": lambda m: self.extinguish_cost,
                                             "Burn cost": lambda m: self.burn_cost,
@@ -123,6 +124,9 @@ class ForestFire(Model):
         # Save the statistics
         self.datacollector.collect(self)
 
+        if self.get_number_on_fire > 0:
+            self.burnout_time += 1
+
     def calculate_fire_edges(self):
         max_x = 0
         min_x = self.width
@@ -156,13 +160,13 @@ class ForestFire(Model):
                     total_density += agent.density
         return total_density
 
-    def get_fraction_on_fire(self):
+    def get_number_on_fire(self):
         total_burning = 0
         for (agents, _, _) in self.grid.coord_iter():
             for agent in agents:
                 if type(agent) is Tree and agent.on_fire:
                     total_burning += 1
-        return total_burning / self.total_trees
+        return total_burning
 
     def percentage_lost(self):
         return (1 - self.get_total_density() / self.initial_total_density) * 100
