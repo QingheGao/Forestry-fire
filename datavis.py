@@ -5,7 +5,8 @@ from itertools import combinations
 import numpy as np
 
 
-data = pickle.load(open("data_fireline.p", "rb"))
+data_fireline = pickle.load(open("data_fireline.p", "rb"))
+data_ext = pickle.load(open("data_ext.p", "rb"))
 
 def plot_index(s, params, i, title=''):
     """
@@ -40,23 +41,42 @@ def plot_index(s, params, i, title=''):
     plt.errorbar(indices, range(l), xerr=errors, linestyle='None', marker='o')
     plt.axvline(0, c='k')
 
-problem = {
+problem_fireline = {
     'num_vars': 5,
     'names': ['fire_spread_param', 'number_firefighters', 'fire_line_margin','cut_down_amount','firefighter_response_delay'],
     'bounds': [[0.003, 0.006], [1, 20], [1, 5], [100, 555],[1,5]]
 }
 
-Si_fireline = sobol.analyze(problem, data['Percentage lost'].as_matrix(), print_to_console=True)
+problem_ext = {
+    'num_vars': 4,
+    'names': ['fire_spread_param', 'number_firefighters', 'extinguish_difficulty', 'firefighter_response_delay'], 
+    'bounds': [[0.003, 0.006], [1, 20], [1, 5], [1, 5]]
+}
 
+Si_fireline = sobol.analyze(problem_fireline, data_fireline['Percentage lost'].as_matrix(), print_to_console=True)
+Si_ext = sobol.analyze(problem_ext, data_ext['Percentage lost'].as_matrix(), print_to_console=True)
 
 # First order
-plot_index(Si_fireline, problem['names'], '1', 'First order sensitivity')
+plot_index(Si_fireline, problem_fireline['names'], '1', 'First order sensitivity')
 plt.show()
 
 # Second order
-plot_index(Si_fireline, problem['names'], '2', 'Second order sensitivity')
+plot_index(Si_fireline, problem_fireline['names'], '2', 'Second order sensitivity')
 plt.show()
 
 # Total order
-plot_index(Si_fireline, problem['names'], 'T', 'Total order sensitivity')
+plot_index(Si_fireline, problem_fireline['names'], 'T', 'Total order sensitivity')
+plt.show()
+
+
+# First order
+plot_index(Si_ext, problem_ext['names'], '1', 'First order sensitivity')
+plt.show()
+
+# Second order
+plot_index(Si_ext, problem_ext['names'], '2', 'Second order sensitivity')
+plt.show()
+
+# Total order
+plot_index(Si_ext, problem_ext['names'], 'T', 'Total order sensitivity')
 plt.show()
