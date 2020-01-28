@@ -1,0 +1,62 @@
+import pickle
+from SALib.analyze import sobol
+import matplotlib.pyplot as plt
+from itertools import combinations
+import numpy as np
+
+
+data = pickle.load(open("data.p", "rb"))
+
+def plot_index(s, params, i, title=''):
+    """
+    Creates a plot for Sobol sensitivity analysis that shows the contributions
+    of each parameter to the global sensitivity.
+
+    Args:
+        s (dict): dictionary {'S#': dict, 'S#_conf': dict} of dicts that hold
+            the values for a set of parameters
+        params (list): the parameters taken from s
+        i (str): string that indicates what order the sensitivity is.
+        title (str): title for the plot
+    """
+
+    if i == '2':
+        p = len(params)
+        params = list(combinations(params, 2))
+        indices = s['S' + i].reshape((p ** 2))
+        indices = indices[~np.isnan(indices)]
+        errors = s['S' + i + '_conf'].reshape((p ** 2))
+        errors = errors[~np.isnan(errors)]
+    else:
+        indices = s['S' + i]
+        errors = s['S' + i + '_conf']
+        plt.figure()
+
+    l = len(indices)
+
+    plt.title(title)
+    plt.ylim([-0.2, len(indices) - 1 + 0.2])
+    plt.yticks(range(l), params)
+    plt.errorbar(indices, range(l), xerr=errors, linestyle='None', marker='o')
+    plt.axvline(0, c='k')
+
+problem = {
+    'num_vars': 5,
+    'names': ['fire_spread_param', 'number_firefighters', 'fire_line_margin','cut_down_amount','firefighter_response_delay'],
+    'bounds': [[0.003, 0.006], [1, 20], [1, 5], [100, 555],[1,5]]
+}
+
+Si_cutdown = sobol.analyze(problem, data['Percentage lost'].as_matrix(), print_to_console=True)
+
+
+# First order
+plot_index(Si_cutdown, problem['names'], '1', 'First order sensitivity')
+plt.show()
+
+# Second order
+plot_index(Si_cutdown, problem['names'], '2', 'Second order sensitivity')
+plt.show()
+
+# Total order
+plot_index(Si_cutdown, problem['names'], 'T', 'Total order sensitivity')
+plt.show()
