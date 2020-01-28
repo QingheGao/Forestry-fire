@@ -115,15 +115,13 @@ class ForestFire(Model):
         '''
         Method that calls the step method for each of the sheep, and then for each of the wolves.
         '''
-        if self.steps > self.firefighter_response_delay:
+        if self.schedule.steps > self.firefighter_response_delay:
             self.schedule.step()
         else:
             self.schedule.step(activate_firefighters=False)
 
         # Save the statistics
         self.datacollector.collect(self)
-
-        self.steps += 1
 
     def calculate_fire_edges(self):
         max_x = 0

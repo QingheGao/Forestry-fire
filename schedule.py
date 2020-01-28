@@ -7,10 +7,14 @@ class RandomActivationForestFire(RandomActivation):
         self.tree_schedule = RandomActivation(model)
         self.firefighter_schedule = RandomActivation(model)
 
+        self.steps = 0
+
     def step(self, activate_firefighters=True):
         self.tree_schedule.step()
         if activate_firefighters:
             self.firefighter_schedule.step()
+        
+        self.steps += 1
 
     def add_tree(self, tree):
         self.tree_schedule.add(tree)
