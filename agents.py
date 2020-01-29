@@ -48,7 +48,7 @@ class FireFighter(Agent):
         super().__init__(unique_id, model)
         self.pos = pos
 
-        self.strategy = self.extinguish_only
+        self.strategy = self.firelines_only
 
     def step(self):
         # execute strategy
