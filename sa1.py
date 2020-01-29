@@ -5,9 +5,10 @@ from model import ForestFire
 import pickle
 
 problem = {
-    'num_vars': 4,
-    'names': ['fire_spread_param', 'number_firefighters', 'extinguish_difficulty', 'firefighter_response_delay'],
-    'bounds': [[0.003, 0.006], [1, 20], [1, 5], [1, 5]]
+    'num_vars': 5,
+    'names': ['fire_spread_param', 'number_firefighters', 'fire_line_margin', 'cut_down_amount',
+              'firefighter_response_delay'],
+    'bounds': [[0.003, 0.006], [1, 20], [1, 5], [100, 555], [1, 5]]
 }
 
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
@@ -17,7 +18,8 @@ distinct_samples = 10
 
 # Set the outputs
 model_reporters = {"Percentage lost": lambda m: m.percentage_lost(),
-                   "Burnout time": lambda m: m.burnout_time}
+                   "Burnout time": lambda m: m.burnout_time
+                   }
 
 # We get all our samples here
 param_values = saltelli.sample(problem, distinct_samples)
@@ -34,9 +36,9 @@ for i in range(replicates):
         # Change parameters that should be integers
         vals = list(vals)
         vals[1] = int(vals[1])
+        vals[2] = int(vals[2])
         vals[3] = int(vals[3])
-
-
+        vals[4] = int(vals[4])
 
         # Transform to dict with parameter names and their values
         variable_parameters = {}
@@ -50,5 +52,5 @@ for i in range(replicates):
         print(f'{count / (len(param_values) * (replicates)) * 100:.2f}% done')
 
 data = batch.get_model_vars_dataframe()
-pickle.dump(data, open('data_ext.p', 'wb'))
+pickle.dump(data, open('data_fireline.p', 'wb'))
 print(data)
