@@ -4,11 +4,12 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 import numpy as np
 
+plt.rcParams['figure.figsize'] = 10, 3
 
 data_fireline = pickle.load(open("data_fireline.p", "rb"))
 data_ext = pickle.load(open("data_ext.p", "rb"))
 
-def plot_index(s, params, i, title=''):
+def plot_index(s, params, i, title='', filename=''):
     """
     Creates a plot for Sobol sensitivity analysis that shows the contributions
     of each parameter to the global sensitivity.
@@ -40,6 +41,8 @@ def plot_index(s, params, i, title=''):
     plt.yticks(range(l), params)
     plt.errorbar(indices, range(l), xerr=errors, linestyle='None', marker='o')
     plt.axvline(0, c='k')
+    plt.tight_layout()
+    plt.savefig('images/' + filename)
 
 problem_fireline = {
     'num_vars': 5,
@@ -57,26 +60,26 @@ Si_fireline = sobol.analyze(problem_fireline, data_fireline['Percentage lost'].a
 Si_ext = sobol.analyze(problem_ext, data_ext['Percentage lost'].as_matrix(), print_to_console=True)
 
 # First order
-plot_index(Si_fireline, problem_fireline['names'], '1', 'First order sensitivity')
+plot_index(Si_fireline, problem_fireline['names'], '1', 'First order sensitivity', 'FOSfirelines.png')
 plt.show()
 
 # Second order
-plot_index(Si_fireline, problem_fireline['names'], '2', 'Second order sensitivity')
+plot_index(Si_fireline, problem_fireline['names'], '2', 'Second order sensitivity', 'SOSfirelines.png')
 plt.show()
 
 # Total order
-plot_index(Si_fireline, problem_fireline['names'], 'T', 'Total order sensitivity')
+plot_index(Si_fireline, problem_fireline['names'], 'T', 'Total order sensitivity', 'TOSfirelines.png')
 plt.show()
 
 
 # First order
-plot_index(Si_ext, problem_ext['names'], '1', 'First order sensitivity')
+plot_index(Si_ext, problem_ext['names'], '1', 'First order sensitivity', 'FOSext.png')
 plt.show()
 
 # Second order
-plot_index(Si_ext, problem_ext['names'], '2', 'Second order sensitivity')
+plot_index(Si_ext, problem_ext['names'], '2', 'Second order sensitivity', 'SOSext.png')
 plt.show()
 
 # Total order
-plot_index(Si_ext, problem_ext['names'], 'T', 'Total order sensitivity')
+plot_index(Si_ext, problem_ext['names'], 'T', 'Total order sensitivity', 'TOSext.png')
 plt.show()

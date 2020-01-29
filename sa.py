@@ -17,7 +17,8 @@ distinct_samples = 10
 
 # Set the outputs
 model_reporters = {"Percentage lost": lambda m: m.percentage_lost(),
-                   "Burnout time": lambda m: m.burnout_time}
+                   "Burnout time": lambda m: m.burnout_time
+                  }
 
 # We get all our samples here
 param_values = saltelli.sample(problem, distinct_samples)
@@ -48,5 +49,5 @@ for i in range(replicates):
         print(f'{count / (len(param_values) * (replicates)) * 100:.2f}% done')
     
 data = batch.get_model_vars_dataframe()
-pickle.dump(data, open("data.p", "wb"))
+pickle.dump(data, open("data_ext.p", "wb"))
 print(data)
