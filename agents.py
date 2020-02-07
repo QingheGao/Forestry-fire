@@ -44,15 +44,22 @@ class Tree(Agent):
         return portrayal
 
 class FireFighter(Agent):
-    def __init__(self, unique_id, model, pos):
+
+    extinguish = "extinguish"
+    firelines = "firelines"
+
+    def __init__(self, unique_id, model, pos, strategy):
         super().__init__(unique_id, model)
         self.pos = pos
 
-        self.strategy = self.firelines_only
+        self.strategy = strategy
 
     def step(self):
         # execute strategy
-        self.strategy()
+        if self.strategy == FireFighter.extinguish:
+            self.extinguish_only()
+        elif self.strategy == FireFighter.firelines:
+            self.firelines_only()
 
     # def burn_down_only(self):
     #     # teleport to tree with highest density

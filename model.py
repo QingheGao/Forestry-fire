@@ -18,6 +18,7 @@ class ForestFire(Model):
     def __init__(self, height=height, width=width,
         initial_density_dist_alpha=1.5, initial_density_dist_beta=10, max_density=555,
         fire_spread_param=0.0045,
+        firefighter_strategy=FireFighter.extinguish,
         number_firefighters=10, extinguish_difficulty=3, fire_line_margin=5, cut_down_amount=250, firefighter_response_delay=1):
 
         super().__init__()
@@ -32,7 +33,8 @@ class ForestFire(Model):
         self.max_density = max_density
         
         self.fire_spread_param = fire_spread_param
-        
+
+        self.firefighter_strategy = firefighter_strategy
         self.number_firefighters = number_firefighters
         self.extinguish_difficulty = extinguish_difficulty
         self.fire_line_margin = fire_line_margin
@@ -107,7 +109,7 @@ class ForestFire(Model):
         self.schedule.add_tree(tree)
 
     def new_firefighter(self, pos):
-        firefighter = FireFighter(self.next_id(), self, pos)
+        firefighter = FireFighter(self.next_id(), self, pos, self.firefighter_strategy)
 
         self.grid.place_agent(firefighter, pos)
         self.schedule.add_firefighter(firefighter)

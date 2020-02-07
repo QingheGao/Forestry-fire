@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 import numpy as np
 
-plt.rcParams['figure.figsize'] = 10, 3
+plt.rcParams['figure.figsize'] = 7, 5
 
 data_fireline = pickle.load(open("data_fireline.p", "rb"))
 data_ext = pickle.load(open("data_ext.p", "rb"))
@@ -60,26 +60,26 @@ Si_fireline = sobol.analyze(problem_fireline, data_fireline['Percentage lost'].a
 Si_ext = sobol.analyze(problem_ext, data_ext['Percentage lost'].as_matrix(), print_to_console=True)
 
 # First order
-plot_index(Si_fireline, problem_fireline['names'], '1', 'First order sensitivity', 'FOSfirelines.png')
+plot_index(Si_fireline, problem_fireline['names'], '1', 'First order sensitivity_fireline', 'FOSfirelines.png')
 plt.show()
 
 # Second order
-plot_index(Si_fireline, problem_fireline['names'], '2', 'Second order sensitivity', 'SOSfirelines.png')
+plot_index(Si_fireline, problem_fireline['names'], '2', 'Second order sensitivity_fireline', 'SOSfirelines.png')
 plt.show()
 
 # Total order
-plot_index(Si_fireline, problem_fireline['names'], 'T', 'Total order sensitivity', 'TOSfirelines.png')
+plot_index(Si_fireline, problem_fireline['names'], 'T', 'Total order sensitivity_fireline', 'TOSfirelines.png')
 plt.show()
 
 
 # First order
-plot_index(Si_ext, problem_ext['names'], '1', 'First order sensitivity', 'FOSext.png')
+plot_index(Si_ext, problem_ext['names'], '1', 'First order sensitivity_ext', 'FOSext.png')
 plt.show()
 
 # Second order
-plot_index(Si_ext, problem_ext['names'], '2', 'Second order sensitivity', 'SOSext.png')
+plot_index(Si_ext, problem_ext['names'], '2', 'Second order sensitivity_ext', 'SOSext.png')
 plt.show()
 
 # Total order
-plot_index(Si_ext, problem_ext['names'], 'T', 'Total order sensitivity', 'TOSext.png')
+plot_index(Si_ext, problem_ext['names'], 'T', 'Total order sensitivity_ext', 'TOSext.png')
 plt.show()

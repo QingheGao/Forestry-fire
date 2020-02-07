@@ -11,7 +11,7 @@ problem = {
 }
 
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
-replicates = 10
+replicates = 100
 max_steps = 50
 distinct_samples = 10
 
