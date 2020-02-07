@@ -52,11 +52,7 @@ class FireFighter(Agent):
         super().__init__(unique_id, model)
         self.pos = pos
 
-<<<<<<< Updated upstream
         self.strategy = strategy
-=======
-        self.strategy = self.extinguish_only
->>>>>>> Stashed changes
 
     def step(self):
         # execute strategy

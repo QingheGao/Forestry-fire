@@ -17,12 +17,8 @@ class ForestFire(Model):
     
     def __init__(self, height=height, width=width,
         initial_density_dist_alpha=1.5, initial_density_dist_beta=10, max_density=555,
-<<<<<<< Updated upstream
         fire_spread_param=0.0045,
         firefighter_strategy=FireFighter.extinguish,
-=======
-        fire_spread_param=0.004,
->>>>>>> Stashed changes
         number_firefighters=10, extinguish_difficulty=3, fire_line_margin=5, cut_down_amount=250, firefighter_response_delay=1):
 
         super().__init__()
